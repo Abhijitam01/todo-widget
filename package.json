@@ -1,20 +1,46 @@
 {
-  "name": "todo-widget",
+  "name": "errika-modern",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Beautiful modern translucent todo widget built with Electron and TypeScript",
+  "main": "dist/main.js",
   "scripts": {
-    "build" : "tsc" ,
-    "start" : " npm run build && electron",
-    "dev"   : "tsc -w"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "npm run build && electron . --no-sandbox",
+    "dev": "concurrently \"npm run build:watch\" \"wait-on dist/main.js && electron . --no-sandbox\"",
+    "pack": "electron-builder",
+    "dist": "electron-builder --publish=never"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["todo", "widget", "electron", "typescript", "glassmorphism"],
+  "author": "Errika Todo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.2.0",
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.0",
+    "typescript": "^5.0.0",
+    "wait-on": "^7.0.0"
+  },
   "dependencies": {
-    "@types/node": "^24.0.3",
-    "electron": "^36.5.0",
-    "electron-builder": "^26.0.12",
-    "typescript": "^5.8.3"
+    "electron-store": "^8.1.0"
+  },
+  "build": {
+    "appId": "com.errika.modern-todo",
+    "productName": "Errika Modern Todo",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/renderer/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "category": "Office"
+    }
   }
-}
+} 

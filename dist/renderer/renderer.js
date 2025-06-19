@@ -1,32 +1,10 @@
-interface Todo {
-    id: string;
-    text: string;
-    completed: boolean;
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    createdAt: Date;
-    updatedAt: Date;
-}
-
+"use strict";
 class TodoApp {
-    private todos: Todo[] = [];
-    private editingTodoId: string | null = null;
-    private contextMenuVisible = false;
-    private selectedTodoId: string | null = null;
-
-    // DOM elements
-    private todoInput!: HTMLInputElement;
-    private prioritySelect!: HTMLSelectElement;
-    private addTodoBtn!: HTMLButtonElement;
-    private todoList!: HTMLElement;
-    private emptyState!: HTMLElement;
-    private totalCount!: HTMLElement;
-    private pendingCount!: HTMLElement;
-    private completedCount!: HTMLElement;
-    private contextMenu!: HTMLElement;
-    private minimizeBtn!: HTMLButtonElement;
-    private closeBtn!: HTMLButtonElement;
-
     constructor() {
+        this.todos = [];
+        this.editingTodoId = null;
+        this.contextMenuVisible = false;
+        this.selectedTodoId = null;
         console.log('TodoApp constructor called');
         this.initializeElements();
         console.log('Elements initialized');
@@ -38,31 +16,25 @@ class TodoApp {
         this.updateStats();
         console.log('TodoApp fully initialized');
     }
-
-    private initializeElements(): void {
+    initializeElements() {
         // Input elements
-        this.todoInput = document.getElementById('todoInput') as HTMLInputElement;
-        this.prioritySelect = document.getElementById('prioritySelect') as HTMLSelectElement;
-        this.addTodoBtn = document.getElementById('addTodoBtn') as HTMLButtonElement;
-        
+        this.todoInput = document.getElementById('todoInput');
+        this.prioritySelect = document.getElementById('prioritySelect');
+        this.addTodoBtn = document.getElementById('addTodoBtn');
         // Display elements
-        this.todoList = document.getElementById('todoList') as HTMLElement;
-        this.emptyState = document.getElementById('emptyState') as HTMLElement;
-        
+        this.todoList = document.getElementById('todoList');
+        this.emptyState = document.getElementById('emptyState');
         // Stats elements
-        this.totalCount = document.getElementById('totalCount') as HTMLElement;
-        this.pendingCount = document.getElementById('pendingCount') as HTMLElement;
-        this.completedCount = document.getElementById('completedCount') as HTMLElement;
-        
+        this.totalCount = document.getElementById('totalCount');
+        this.pendingCount = document.getElementById('pendingCount');
+        this.completedCount = document.getElementById('completedCount');
         // Menu elements
-        this.contextMenu = document.getElementById('contextMenu') as HTMLElement;
-        
+        this.contextMenu = document.getElementById('contextMenu');
         // Window controls
-        this.minimizeBtn = document.getElementById('minimizeBtn') as HTMLButtonElement;
-        this.closeBtn = document.getElementById('closeBtn') as HTMLButtonElement;
+        this.minimizeBtn = document.getElementById('minimizeBtn');
+        this.closeBtn = document.getElementById('closeBtn');
     }
-
-    private setupEventListeners(): void {
+    setupEventListeners() {
         // Add todo
         this.addTodoBtn.addEventListener('click', () => this.addTodo());
         this.todoInput.addEventListener('keypress', (e) => {
@@ -70,23 +42,19 @@ class TodoApp {
                 this.addTodo();
             }
         });
-
         // Window controls
         this.minimizeBtn.addEventListener('click', () => {
             window.electronAPI.windowMinimize();
         });
-
         this.closeBtn.addEventListener('click', () => {
             window.electronAPI.windowClose();
         });
-
         // Context menu
         document.addEventListener('click', (e) => {
-            if (!this.contextMenu.contains(e.target as Node)) {
+            if (!this.contextMenu.contains(e.target)) {
                 this.hideContextMenu();
             }
         });
-
         // Context menu actions
         document.getElementById('editTodo')?.addEventListener('click', () => {
             if (this.selectedTodoId) {
@@ -94,19 +62,16 @@ class TodoApp {
             }
             this.hideContextMenu();
         });
-
         document.getElementById('deleteTodo')?.addEventListener('click', () => {
             if (this.selectedTodoId) {
                 this.deleteTodo(this.selectedTodoId);
             }
             this.hideContextMenu();
         });
-
         // Auto-save
         window.addEventListener('beforeunload', () => {
             this.saveTodos();
         });
-
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -115,43 +80,36 @@ class TodoApp {
             }
         });
     }
-
-    private generateId(): string {
+    generateId() {
         return `todo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
-
-    private addTodo(): void {
+    addTodo() {
         const text = this.todoInput.value.trim();
         console.log('Adding todo:', text);
         if (!text) {
             console.log('No text provided, returning');
             return;
         }
-
-        const todo: Todo = {
+        const todo = {
             id: this.generateId(),
             text,
             completed: false,
-            priority: this.prioritySelect.value as Todo['priority'],
+            priority: this.prioritySelect.value,
             createdAt: new Date(),
             updatedAt: new Date()
         };
-
         console.log('Created todo:', todo);
         this.todos.unshift(todo);
         console.log('Todos array after adding:', this.todos);
         this.todoInput.value = '';
         this.prioritySelect.value = 'medium';
-        
         this.saveTodos();
         this.render();
         this.updateStats();
-
         // Focus input for quick adding
         this.todoInput.focus();
     }
-
-    private toggleTodo(id: string): void {
+    toggleTodo(id) {
         const todo = this.todos.find(t => t.id === id);
         if (todo) {
             todo.completed = !todo.completed;
@@ -161,17 +119,14 @@ class TodoApp {
             this.updateStats();
         }
     }
-
-    private editTodo(id: string): void {
+    editTodo(id) {
         const todo = this.todos.find(t => t.id === id);
-        if (!todo) return;
-
+        if (!todo)
+            return;
         this.editingTodoId = id;
-        
         // Create inline edit
-        const todoItem = document.querySelector(`[data-todo-id="${id}"]`) as HTMLElement;
-        const textElement = todoItem.querySelector('.todo-text') as HTMLElement;
-        
+        const todoItem = document.querySelector(`[data-todo-id="${id}"]`);
+        const textElement = todoItem.querySelector('.todo-text');
         const input = document.createElement('input');
         input.type = 'text';
         input.value = todo.text;
@@ -186,11 +141,9 @@ class TodoApp {
             width: 100%;
             backdrop-filter: blur(10px);
         `;
-
         textElement.replaceWith(input);
         input.focus();
         input.select();
-
         const saveEdit = () => {
             const newText = input.value.trim();
             if (newText && newText !== todo.text) {
@@ -202,58 +155,49 @@ class TodoApp {
             this.render();
             this.updateStats();
         };
-
         const cancelEdit = () => {
             this.editingTodoId = null;
             this.render();
         };
-
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 saveEdit();
-            } else if (e.key === 'Escape') {
+            }
+            else if (e.key === 'Escape') {
                 cancelEdit();
             }
         });
-
         input.addEventListener('blur', saveEdit);
     }
-
-    private deleteTodo(id: string): void {
+    deleteTodo(id) {
         this.todos = this.todos.filter(t => t.id !== id);
         this.saveTodos();
         this.render();
         this.updateStats();
     }
-
-    private cancelEdit(): void {
+    cancelEdit() {
         if (this.editingTodoId) {
             this.editingTodoId = null;
             this.render();
         }
     }
-
-    private showContextMenu(e: MouseEvent, todoId: string): void {
+    showContextMenu(e, todoId) {
         e.preventDefault();
         this.selectedTodoId = todoId;
         this.contextMenuVisible = true;
-        
         this.contextMenu.style.left = `${e.clientX}px`;
         this.contextMenu.style.top = `${e.clientY}px`;
         this.contextMenu.classList.add('visible');
     }
-
-    private hideContextMenu(): void {
+    hideContextMenu() {
         this.contextMenuVisible = false;
         this.selectedTodoId = null;
         this.contextMenu.classList.remove('visible');
     }
-
-    private createTodoElement(todo: Todo): HTMLElement {
+    createTodoElement(todo) {
         const todoItem = document.createElement('div');
         todoItem.className = `todo-item priority-${todo.priority} ${todo.completed ? 'completed' : ''}`;
         todoItem.setAttribute('data-todo-id', todo.id);
-
         todoItem.innerHTML = `
             <div class="todo-checkbox ${todo.completed ? 'checked' : ''}">
                 ${todo.completed ? '✓' : ''}
@@ -273,137 +217,118 @@ class TodoApp {
                 </button>
             </div>
         `;
-
         // Event listeners
-        const checkbox = todoItem.querySelector('.todo-checkbox') as HTMLElement;
+        const checkbox = todoItem.querySelector('.todo-checkbox');
         checkbox.addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleTodo(todo.id);
         });
-
-        const editBtn = todoItem.querySelector('.edit-btn') as HTMLElement;
+        const editBtn = todoItem.querySelector('.edit-btn');
         editBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.editTodo(todo.id);
         });
-
-        const deleteBtn = todoItem.querySelector('.delete-btn') as HTMLElement;
+        const deleteBtn = todoItem.querySelector('.delete-btn');
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.deleteTodo(todo.id);
         });
-
         // Context menu
         todoItem.addEventListener('contextmenu', (e) => {
             this.showContextMenu(e, todo.id);
         });
-
         return todoItem;
     }
-
-    private sortTodos(): Todo[] {
+    sortTodos() {
         const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
-        
         return [...this.todos].sort((a, b) => {
             // Incomplete todos first
             if (a.completed !== b.completed) {
                 return a.completed ? 1 : -1;
             }
-            
             // Then by priority
             const aPriority = priorityOrder[a.priority];
             const bPriority = priorityOrder[b.priority];
-            
             if (aPriority !== bPriority) {
                 return bPriority - aPriority;
             }
-            
             // Finally by creation date (newest first)
             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
     }
-
-    private render(): void {
+    render() {
         const sortedTodos = this.sortTodos();
-        
         // Clear todo list
         this.todoList.innerHTML = '';
-        
         // Show/hide empty state
         if (sortedTodos.length === 0) {
             this.emptyState.classList.remove('hidden');
-        } else {
+        }
+        else {
             this.emptyState.classList.add('hidden');
-            
             // Add todos
             sortedTodos.forEach((todo, index) => {
                 const todoElement = this.createTodoElement(todo);
-                
                 // Add stagger animation delay
                 todoElement.style.animationDelay = `${index * 50}ms`;
-                
                 this.todoList.appendChild(todoElement);
             });
         }
     }
-
-    private updateStats(): void {
+    updateStats() {
         const total = this.todos.length;
         const completed = this.todos.filter(t => t.completed).length;
         const pending = total - completed;
-        
         this.totalCount.textContent = total.toString();
         this.completedCount.textContent = completed.toString();
         this.pendingCount.textContent = pending.toString();
     }
-
-    private saveTodos(): void {
+    saveTodos() {
         try {
             const todosData = JSON.stringify(this.todos);
             localStorage.setItem('errika-todos', todosData);
             console.log('Todos saved:', this.todos.length, 'items');
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Failed to save todos:', error);
         }
     }
-
-    private loadTodos(): void {
+    loadTodos() {
         try {
             const saved = localStorage.getItem('errika-todos');
             console.log('Loading todos from storage:', saved);
             if (saved) {
-                this.todos = JSON.parse(saved).map((todo: any) => ({
+                this.todos = JSON.parse(saved).map((todo) => ({
                     ...todo,
                     createdAt: new Date(todo.createdAt),
                     updatedAt: new Date(todo.updatedAt)
                 }));
                 console.log('Loaded', this.todos.length, 'todos');
-            } else {
+            }
+            else {
                 console.log('No saved todos found');
                 this.todos = [];
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Failed to load todos:', error);
             this.todos = [];
         }
     }
-
-    private escapeHtml(text: string): string {
+    escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 }
-
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new TodoApp();
 });
-
 // Add some beautiful effects
 document.addEventListener('DOMContentLoaded', () => {
     // Add particle effect on todo completion
-    const createParticle = (x: number, y: number) => {
+    const createParticle = (x, y) => {
         const particle = document.createElement('div');
         particle.style.cssText = `
             position: fixed;
@@ -417,14 +342,11 @@ document.addEventListener('DOMContentLoaded', () => {
             z-index: 1000;
             animation: particle-burst 0.6s ease-out forwards;
         `;
-        
         document.body.appendChild(particle);
-        
         setTimeout(() => {
             particle.remove();
         }, 600);
     };
-
     // Add the particle animation CSS
     const style = document.createElement('style');
     style.textContent = `
@@ -440,4 +362,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
     document.head.appendChild(style);
-}); 
+});
+//# sourceMappingURL=renderer.js.map
