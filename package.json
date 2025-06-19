@@ -1,0 +1,20 @@
+{
+  "name": "todo-widget",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build" : "tsc" ,
+    "start" : " npm run build && electron",
+    "dev"   : "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^24.0.3",
+    "electron": "^36.5.0",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.8.3"
+  }
+}
