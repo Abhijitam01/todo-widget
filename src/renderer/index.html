@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Errika Modern todo</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <div class="title-bar" id="titleBar">
+            <div class="title-content">
+                <div class="logo-section">
+                    <div class="logo-icon">@</div>
+                    <div class="app-title">Errika</div>
+                </div>
+                <div class="window-controls">
+                    <button class="control-btn minimize-btn" id="minimizeBtn">
+                        <svg width="12" height="12" viewBox="0 0 12 12">
+                            <path d="M2 6h8" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn close-btn" id="closeBtn">
+                        <svg width="12" height="12" viewBox="0 0 12 12">
+                            <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="add-todo-section">
+                <input type ="text" id ="todoInput" placeholder="What needs to be done ?" class="todo-input" maxlength="500"/>
+                <div class="input-actions">
+                    <select id="prioritySelect" class="priority-select">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium">🔵 Medium</option>
+                        <option value="high">🟠 High</option>
+                        <option value="urgent">🔴 Urgent</option>
+                    </select>
+                    <button id="addTodoBtn" class="add-btn">
+                        <svg width="16" height="16" viewBox="0 0 16 16">
+                                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="todo-list-container">
+                <div class="todo-list" id="todoList"></div>
+                <div class="empty-state" id="emptyState">
+                     <div class="empty-icon">📝</div>
+                     <h3>No todos yet</h3>
+                     <p>Add your first todo above to get started</p>
+                </div>
+            </div>
+            <div class="stats-section">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="totalCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pending</span>
+                    <span class="stat-value" id="pendingCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-value" id="completedCount">0</span>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+    <div class="context-menu" id="contextMenu">
+        <div class="context-item" id="editTodo">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M12.146 2.146a.5.5 0 0 1 .708 0l1 1a.5.5 0 0 1 0 .708L9.207 8.5 7.5 9.207 8.207 7.5l4.646-4.646a.5.5 0 0 1 .708 0z"/>
+                <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+            Edit
+        </div>
+        <div class="context-item" id="deleteTodo">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5zM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84L13.962 3.5H14.5a.5.5 0 0 0 0-1h-1.004a.58.58 0 0 0-.01 0H11z"/>
+            </svg>
+            Delete
+        </div>
+    </div> 
+    <script src="../../dist/renderer/renderer.js"></script>
+</body>
+</html>
